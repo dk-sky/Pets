@@ -38,8 +38,6 @@ import com.example.android.pets.data.PetDbHelper;
  */
 public class EditorActivity extends AppCompatActivity {
 
-    private PetDbHelper mDbHelper;
-
     /** EditText field to enter the pet's name */
     private EditText mNameEditText;
 
@@ -70,7 +68,6 @@ public class EditorActivity extends AppCompatActivity {
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
 
         setupSpinner();
-        mDbHelper = new PetDbHelper(this);
     }
 
     /**
@@ -119,6 +116,8 @@ public class EditorActivity extends AppCompatActivity {
         String breedString = mBreedEditText.getText().toString().trim();
         int weight = Integer.parseInt(mWeightEditText.getText().toString().trim());
 
+
+        PetDbHelper mDbHelper = new PetDbHelper(this);
         // Gets the database in write mode
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
@@ -130,11 +129,13 @@ public class EditorActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
-        try {
-            db.insert(PetEntry.TABLE_NAME, null, values);
-            Toast.makeText(this, "Pet saved with id: " + PetEntry._ID,Toast.LENGTH_SHORT).show();
-        } catch (Exception ex) {
+        long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+
+        if(newRowId ==-1) {
             Toast.makeText(this, "Error with saving pet",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Pet saved with id: " + newRowId,Toast.LENGTH_SHORT).show();
+
         }
     }
 
